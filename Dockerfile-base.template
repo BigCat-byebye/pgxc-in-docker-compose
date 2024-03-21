@@ -4,12 +4,6 @@ ENV PGUSER=$PGUSER
 ENV PASSWORD_FOR_SSH=$PASSWORD_FOR_SSH
 ENV PGXL_PACKAGE_VERSION=$PGXL_PACKAGE_VERSION
 
-ENV PATH="$PATH:/usr/local/postgres/bin"
-ENV PGHOME="/usr/local/postgres/"
-ENV LD_LIBRARY_PATH="$PGHOME/lib:$LD_LIBRARY_PATH"
-ENV PGXC_CTL_HOME="/usr/local/postgres/bin"
-
-
 RUN	yum makecache && yum install -y flex bison readline-devel zlib-devel openjade docbook-style-dsssl wget gcc gcc-c++ automake autoconf libtool make openssh-server openssh-clients sudo && \
 	wget https://www.postgres-xl.org/downloads/postgres-xl-$PGXL_PACKAGE_VERSION.tar.gz -O /tmp/postgres-xl-$PGXL_PACKAGE_VERSION.tar.gz && \
 	tar xzvf /tmp/postgres-xl-$PGXL_PACKAGE_VERSION.tar.gz -C /usr/local/ && \
@@ -31,20 +25,15 @@ RUN	yum makecache && yum install -y flex bison readline-devel zlib-devel openjad
 	ssh-keygen -t rsa -f ~/.ssh/id_rsa && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
     chmod 600 ~/.ssh/authorized_keys && \
-	useradd -m $PGUSER && \
+	useradd -d /data/ -m $PGUSER && \
 	echo $PASSWORD_FOR_SSH | passwd --stdin $PGUSER && \
 	echo $PASSWORD_FOR_SSH | passwd --stdin root && \
 	su - $PGUSER -c "ssh-keygen -t rsa -f ~/.ssh/id_rsa" && \
     su - $PGUSER -c "cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys" && \
     su - $PGUSER -c "chmod 600 ~/.ssh/authorized_keys" && \
 	echo "$PGUSER   ALL=(root)     NOPASSWD:ALL" >> /etc/sudoers && \
-	echo "PATH=$PATH:/usr/local/postgres/bin" >> /home/$PGUSER/.bashrc && \
-	echo "PGHOME=/usr/local/postgres/" >> /home/$PGUSER/.bashrc && \
-	echo "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH" >> /home/$PGUSER/.bashrc && \
-	echo "PGXC_CTL_HOME=/usr/local/postgres/bin" >> /home/$PGUSER/.bashrc && \
-	echo "PGUSER=$PGUSER" >> /home/$PGUSER/.bashrc  && \
-	mkdir -pv /data && \
-	chown -R $PGUSER:$PGUSER /data
+	echo "PATH=$PATH:/usr/local/postgres/bin" >> /data/.bashrc && \
+	echo "LD_LIBRARY_PATH=/usr/local/postgres/lib:$LD_LIBRARY_PATH" >> /data/.bashrc
 
 EXPOSE 22
 
