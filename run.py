@@ -5,7 +5,7 @@ import os
 outDir = 'output'
 envfile = 'env.ini'
 dockerfile_base = 'Dockerfile-base.template'
-copyFile = ['check.sql']
+copyFile = ['check.sql', 'pgxc_ctl.conf']
 
 config = configparser.ConfigParser()
 config.read(envfile)
@@ -65,7 +65,7 @@ def genDockerComposeFile():
         f.writelines("\n".join(tmpStr))
        
 def genPgxcConf():
-    filepath = os.path.join(outDir, 'pgxc_ctl.conf')
+    filepath = 'pgxc_ctl.conf'
     with open(filepath, 'w') as f:
         cn_num = config[cluster_type]['CN_MASTER']
         dn_num = config[cluster_type]['DN_MASTER']
@@ -240,21 +240,17 @@ def startCluster():
 
 if not os.path.exists(outDir):
     os.mkdir(outDir)
-for file in copyFile:
-    cmdStr = 'cp ./%s %s' % (file, os.path.join(outDir, file))
-    os.system(cmdStr)
 
 genDockerfile()
 genDockerComposeFile()
 genPgxcConf()
 
-# ## 启动docker-compose
-# cmd_str = 'cd output && docker-compose up -d'
-# os.system(cmd_str)
+for file in copyFile:
+    cmdStr = 'cp ./%s %s' % (file, os.path.join(outDir, file))
+    os.system(cmdStr)
+cmdStr = 'rm -rf pgxc_ctl.conf'
+os.system(cmdStr)
 
-
-### 
-### docker exec -it output_gtm1_1 bash
-### su - pgxc
-### pgxc_ctl -c /pgxc_ctl.conf init all
-### psql -h cn1 -p 5555 -U pgxc -d postgres -f /check.sql
+cmdStr = '''docker-compose exec gtmmaster1 bash -c "su - %s -c 'pgxc_ctl -c /pgxc_ctl.conf init all && psql -h cnmaster1 -p %s -U %s -d postgres -f /check.sql'"''' % (config['DockerfileBase']['PGUSER'],config[cluster_type]['CN_PORT'], config['DockerfileBase']['PGUSER'] )
+print(cmdStr)
+os.system(cmdStr)

@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "./check.sql:/check.sql"
+      - "./pgxc_ctl.conf:/pgxc_ctl.conf"
   gtmslave1:
     build:
       context: .
