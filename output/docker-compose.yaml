@@ -1,0 +1,55 @@
+version: '3'
+networks:
+  pgxc:
+    driver: bridge
+services:
+  gtmmaster1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./check.sql:/check.sql"
+  gtmslave1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  cnmaster1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  cnslave1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  cnmaster2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  cnslave2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnmaster1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnslave1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnmaster2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnslave2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnmaster3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  dnslave3:
+    build:
+      context: .
+      dockerfile: Dockerfile

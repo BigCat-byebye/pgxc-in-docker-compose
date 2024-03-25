@@ -1,0 +1,48 @@
+// pipeline {
+//   agent any
+
+//   stages {
+//     stage("检出") {
+//       steps {
+//         checkout(
+//           [$class: 'GitSCM',
+//           branches: [[name: GIT_BUILD_REF]],
+//           userRemoteConfigs: [[
+//             url: GIT_REPO_URL,
+//               credentialsId: CREDENTIALS_ID
+//             ]]]
+//         )
+//       }
+//     }
+       
+
+//     stage('镜像构建') {
+//       steps {
+//         echo '使用Docker构建telebot镜像'
+//         sh 'docker build . --no-cache -t ${IMAGE_NAME}'
+//       }
+//     }
+
+//     stage('镜像推送') {
+//       steps {
+//         echo '推送镜像到Coding制品仓库'
+//         sh 'docker login $REPO_HOST -u $REPO_USER -p $REPO_PASS && docker push $IMAGE_NAME'
+//       }
+//     }
+
+//     stage("NTFY通知") {
+//       steps {
+//         echo '发送通知到NTFY'
+//         sh 'curl -H "Title: Coding持续集成" -d "镜像推送成功: $IMAGE_NAME" $NTFY_URL'
+//       }
+//     }
+
+//   }
+//   environment {
+//     REPO_HOST = 'haofang-docker.pkg.coding.net'
+//     REPO_USER = 'image-1692281666274'
+//     REPO_PASS = 'ce3b8fdad55c3e17d01bec62dfdc44b7f2ff8229'
+//     IMAGE_NAME = "haofang-docker.pkg.coding.net/dev/image/telebot:${GIT_COMMIT_SHORT}"
+//     NTFY_URL = 'https://ntfy.sh/yvd56BqoyihclBfoy'
+//   }
+// }
